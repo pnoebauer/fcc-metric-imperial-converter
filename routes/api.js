@@ -12,12 +12,31 @@ module.exports = function (app) {
 
 	// console.log(convertHandler);
 
+	// 	/api/convert?input=1/2km
+	// 	/api/convert?input=5.4/3lbs
+	// 	/api/convert?input=kg
+
 	app.route('/api/convert/').get((req, res) => {
 		const {input} = req.query;
-		// console.log(req.query, input);
+		console.log('------', req.query, input);
+		const standInput = input.toLowerCase();
 
-		const initNum = convertHandler.getNum(input);
-		const initUnit = convertHandler.getUnit(input);
+		const initNum = convertHandler.getNum(standInput);
+		const initUnit = convertHandler.getUnit(standInput);
+
+		if (!initUnit && !initNum) {
+			console.log('invalid number and unit');
+			return res.json('invalid number and unit');
+		}
+		if (!initUnit) {
+			console.log('invalid unit');
+			return res.json('invalid unit');
+		}
+		if (!initNum) {
+			console.log('invalid number');
+			return res.json('invalid number');
+		}
+
 		const returnUnit = convertHandler.getReturnUnit(initUnit);
 		const returnNum = convertHandler.convert(initNum, initUnit);
 		const string = convertHandler.getString(initNum, initUnit, returnNum, returnUnit);

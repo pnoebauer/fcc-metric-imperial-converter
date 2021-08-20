@@ -6,8 +6,8 @@ function ConvertHandler() {
 	const conversionMap = {
 		km: {returnUnit: 'mi', convNumber: 1 / miToKm},
 		mi: {returnUnit: 'km', convNumber: miToKm},
-		l: {returnUnit: 'gal', convNumber: 1 / galToL},
-		gal: {returnUnit: 'l', convNumber: galToL},
+		L: {returnUnit: 'gal', convNumber: 1 / galToL},
+		gal: {returnUnit: 'L', convNumber: galToL},
 		kg: {returnUnit: 'lbs', convNumber: 1 / lbsToKg},
 		lbs: {returnUnit: 'kg', convNumber: lbsToKg},
 	};
@@ -15,7 +15,7 @@ function ConvertHandler() {
 	const spellingMap = {
 		km: 'kilometers',
 		mi: 'miles',
-		l: 'liters',
+		L: 'liters',
 		gal: 'gallons',
 		kg: 'kilograms',
 		lbs: 'pounds',
@@ -24,7 +24,28 @@ function ConvertHandler() {
 	// from query string => 3.1(initNum)
 	this.getNum = function (input) {
 		// const result = Number(input.match(/[0-9]+/g)[0]);
-		const result = Number(input.match(/[0-9]+/)[0]);
+		// const result = Number(input.match(/[0-9]+/)[0]);
+
+		// const unit = this.getUnit(input);
+    // const correctedUnit = unit === 'L' ? 'l' : unit;
+		// const result = eval(input.split(correctedUnit)[0]) || 1;
+
+
+    if(input.includes('//')) {
+      return null;
+    }
+
+    const unitStart = input.match(/[a-zA-Z]/).index;
+
+    if(unitStart === 0) {
+      return 1;
+    }
+    const num = input.slice(0, unitStart);
+    const result = eval(num);
+
+    // if(!result) {
+    //   return 'invalid number';
+    // }
 
 		return result;
 	};
@@ -32,7 +53,22 @@ function ConvertHandler() {
 	// from query string => 'mi'(initUnit)
 	this.getUnit = function (input) {
 		// const result = input.match(/[^0-9]+/g)[0];
-		const result = input.match(/[^0-9]+/)[0];
+		// const result = input.match(/[^0-9]+/)[0];
+
+    const unitStart = input.match(/[a-zA-Z]/).index;
+    const unit = input.slice(unitStart);
+
+		const validUnit = unit.match(/\km\b|\mi\b|\L\b|\gal\b|\kg\b|\lbs\b/i);
+
+    if(!validUnit) {
+      return null;
+    }
+
+    const result = unit === 'l' ? 'L' : unit;
+
+    // if(!result) {
+    //   return 'invalid unit';
+    // }
 
 		return result;
 	};
@@ -53,8 +89,9 @@ function ConvertHandler() {
 	// e.g. 3.1(initNum) 'mi'(initUnit) => returnNum
 	this.convert = function (initNum, initUnit) {
 		const result = conversionMap[initUnit].convNumber * initNum;
+    const roundedResult = parseFloat(result.toFixed(5));
 
-		return result;
+		return roundedResult;
 	};
 
 	// '3.1 miles converts to 4.98895 kilometers'
