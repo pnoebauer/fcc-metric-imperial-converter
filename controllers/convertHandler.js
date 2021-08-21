@@ -27,25 +27,28 @@ function ConvertHandler() {
 		// const result = Number(input.match(/[0-9]+/)[0]);
 
 		// const unit = this.getUnit(input);
-    // const correctedUnit = unit === 'L' ? 'l' : unit;
+		// const correctedUnit = unit === 'L' ? 'l' : unit;
 		// const result = eval(input.split(correctedUnit)[0]) || 1;
 
+		// if (input.includes('//')) {
+		// 	return null;
+		// }
+		//count / occurences; max 1 allowed (1/2/3 or 1//2 would error out)
+		if ((input.match(/\//g) || []).length > 1) {
+			return null;
+		}
 
-    if(input.includes('//')) {
-      return null;
-    }
+		const unitStart = input.match(/[a-zA-Z]/).index;
 
-    const unitStart = input.match(/[a-zA-Z]/).index;
+		if (unitStart === 0) {
+			return 1;
+		}
+		const num = input.slice(0, unitStart);
+		const result = eval(num);
 
-    if(unitStart === 0) {
-      return 1;
-    }
-    const num = input.slice(0, unitStart);
-    const result = eval(num);
-
-    // if(!result) {
-    //   return 'invalid number';
-    // }
+		// if(!result) {
+		//   return 'invalid number';
+		// }
 
 		return result;
 	};
@@ -55,20 +58,20 @@ function ConvertHandler() {
 		// const result = input.match(/[^0-9]+/g)[0];
 		// const result = input.match(/[^0-9]+/)[0];
 
-    const unitStart = input.match(/[a-zA-Z]/).index;
-    const unit = input.slice(unitStart);
+		const unitStart = input.match(/[a-zA-Z]/).index;
+		const unit = input.slice(unitStart);
 
 		const validUnit = unit.match(/\km\b|\mi\b|\L\b|\gal\b|\kg\b|\lbs\b/i);
 
-    if(!validUnit) {
-      return null;
-    }
+		if (!validUnit) {
+			return null;
+		}
 
-    const result = unit === 'l' ? 'L' : unit;
+		const result = unit === 'l' ? 'L' : unit;
 
-    // if(!result) {
-    //   return 'invalid unit';
-    // }
+		// if(!result) {
+		//   return 'invalid unit';
+		// }
 
 		return result;
 	};
@@ -89,7 +92,7 @@ function ConvertHandler() {
 	// e.g. 3.1(initNum) 'mi'(initUnit) => returnNum
 	this.convert = function (initNum, initUnit) {
 		const result = conversionMap[initUnit].convNumber * initNum;
-    const roundedResult = parseFloat(result.toFixed(5));
+		const roundedResult = parseFloat(result.toFixed(5));
 
 		return roundedResult;
 	};
